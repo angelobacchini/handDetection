@@ -1,0 +1,6 @@
+#ifndef KERNELS_H
+#define KERNELS_H
+
+#define GAUSSIAN_9 0.028532 << 0.067234 << 0.124009 << 0.179044 << 0.20236 << 0.179044 << 0.124009 << 0.067234 << 0.028532
+
+#endif // KERNELS_H
