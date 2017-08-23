@@ -19,7 +19,7 @@ void initParameters()
   parametersTable.append(processParameter("huePicker" , -90,  90,   5));
   parametersTable.append(processParameter("satPicker" ,   0, 255, 155));
   parametersTable.append(processParameter("median"    ,   1,  49,  19));
-  parametersTable.append(processParameter("threshold" ,   0, 255, 180));
+  parametersTable.append(processParameter("threshold" ,   0, 255, 190));
 }
 
 int main(int argc, char *argv[])

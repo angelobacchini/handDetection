@@ -23,7 +23,7 @@ camWidget::camWidget(QWidget* parent) :
     slider->setValue(parametersTable.at(i).m_default);
     slider->setOrientation(Qt::Horizontal);
     slider->setStyleSheet(SLIDER_STYLE);
-    slider->setFixedWidth(150);
+    slider->setFixedWidth(200);
     label = new QLabel();
     label->setAlignment(Qt::AlignCenter);
     label->setStyleSheet(SLIDER_LABEL_STYLE);
@@ -67,14 +67,14 @@ camWidget::camWidget(QWidget* parent) :
   chartView->setRenderHint(QPainter::Antialiasing);
   chartView->setRubberBand(QChartView::HorizontalRubberBand);
   chartView->setMinimumWidth(250);
-  chartView->setMinimumHeight(175);
+  chartView->setMinimumHeight(225);
   m_infoBox->addWidget(chartView);
 
-  // create fingers info label
+  // create fingers info table
   m_fingers = new QVector<int>(5);
   m_fingersInfo = new QTableWidget(5, 2);
   QStringList labels;
-  labels << "finger0" << "finger1" << "finger2" << "finger3" << "finger4";
+  labels << "finger1" << "finger2" << "finger3" << "finger4" << "finger5";
   m_fingersInfo->setVerticalHeaderLabels(QStringList(labels));
   labels.clear();
   labels << "value" << "theta";
@@ -86,9 +86,17 @@ camWidget::camWidget(QWidget* parent) :
     m_fingersInfo->setItem(i, 0, item);
     item = new QTableWidgetItem("-");
     m_fingersInfo->setItem(i, 1, item);
+    m_fingersInfo->setRowHeight(i, 15);
   }
   m_fingersInfo->setStyleSheet(FINGERS_INFO_STYLE);
   m_infoBox->addWidget(m_fingersInfo);
+
+  // create gesture info label
+  m_gestureInfo = new QLabel("no gesture detected");
+  m_gestureInfo->setStyleSheet(GESTURE_INFO_STYLE);
+  m_gestureInfo->setFixedHeight(100);
+  m_gestureInfo->setAlignment(Qt::AlignTop);
+  m_infoBox->addWidget(m_gestureInfo);
 
   // create image box
   m_imageBox = new imageBox();
@@ -143,7 +151,7 @@ void camWidget::getImage(QByteArray _image)
 {
   // new image received from the processing thread
   m_imageArray = _image;
-  m_image = QImage((uchar*)m_imageArray.data(), CAM_WIDTH, CAM_HEIGHT, 640, QImage::Format_Grayscale8);
+  m_image = QImage((uchar*)m_imageArray.data(), CAM_WIDTH, CAM_HEIGHT, CAM_WIDTH, QImage::Format_Grayscale8);
   m_imageBox->update();
   m_fps++; // update fps count
   emit ready();
@@ -161,7 +169,7 @@ void camWidget::getCenterPosition(const int& _x, const int& _y, const double& _r
   emit sendCenterPosition(_x, _y, _r);
 }
 
-void camWidget::getFingers(const QVector<int> &_fingers)
+void camWidget::getFingers(const QVector<int>& _fingers)
 {
   // fingers position received from the processing thread. Update fingers info table
   for(int i = 0; i < _fingers.size(); i++)
@@ -173,21 +181,27 @@ void camWidget::getFingers(const QVector<int> &_fingers)
     {
       item = m_fingersInfo->item(i, 0);
       item->setText(QString::number(value, 'f', 2));
+      item->setTextAlignment(Qt::AlignCenter);
       item = m_fingersInfo->item(i, 1);
       item->setText(QString::number(m_fingers->at(i)));
+       item->setTextAlignment(Qt::AlignCenter);
     }
     else
     {
       item = m_fingersInfo->item(i, 0);
       item->setText("-");
+      item->setTextAlignment(Qt::AlignCenter);
       item = m_fingersInfo->item(i, 1);
       item->setText("-");
+      item->setTextAlignment(Qt::AlignCenter);
     }
   }
-  emit sendFingers(_fingers); // forward fingers positionto the imageBox
+  emit sendFingers(_fingers); // forward fingers position to the imageBox
+
+  gestureDetect(_fingers); // call geture detection method
 }
 
-void camWidget::getVector(int _label, const QVector<double> &_vector)
+void camWidget::getVector(int _label, const QVector<double>& _vector)
 {
   // theta vector received from the procssing thread. Store it and update the hand profile chart
   QVector<QPointF> series(360);
@@ -199,10 +213,47 @@ void camWidget::getVector(int _label, const QVector<double> &_vector)
     m_thetaSeries->replace(series);
 }
 
-void camWidget::gestureDetect(QString _gesture, const QLineSeries& _series)
+void camWidget::gestureDetect(const QVector<int>& _fingers)
 {
-  int index = 0;
-  emit gestureDetected(index, _gesture);
+  int numFingers = 0;
+  int angle = 0;
+  QString info = "";
+  QString gesture = "no gesture detected";
+  QVector<int> angles(4);
+
+  for(int i = 0; i < _fingers.size(); i++)
+  {
+    if(_fingers.at(i) != 0)
+    {
+      numFingers++;
+      if(i > 0)
+      {
+        angles.replace(i-1, _fingers.at(i) - _fingers.at(i-1));
+        info += "\n" + QString::number(angles.at(i-1)) + " degrees between finger " + QString::number(i+1) + " and " + QString::number(i);
+      }
+    }
+  }
+
+  if( // ROCK'N'ROLL GESTURE DETECTION
+     (numFingers == 3) &&
+     ((angles.at(0) > 40) && (angles.at(0) < 70)) &&
+     ((angles.at(1) > 40) && (angles.at(1) < 70))
+    )
+  {
+    gesture = "R'N'R";
+    angle = (_fingers.at(0) + _fingers.at(1))/2;
+  }
+  else if( // VICTORY GESTURE DETECTION
+          (numFingers == 2) &&
+          ((angles.at(0) > 20) && (angles.at(0) < 50))
+         )
+  {
+    gesture = "VICTORY";
+    angle = _fingers.at(0);
+  }
+
+  m_gestureInfo->setText(gesture + "\n" + QString::number(numFingers) + " fingers detected" + info);
+  emit gestureDetected(angle, gesture);
 }
 
 imageBox::imageBox(QWidget *parent) :
@@ -241,7 +292,7 @@ void imageBox::paintEvent(QPaintEvent* event)
   p.drawImage(0, 0, parent->m_image);
   p.translate(m_center);
 
-  if(m_gesture == QString("") && m_radius > 20) // if no gesture is detected, draw a circle around the center of the hand
+  if(m_gesture == QString("no gesture detected") && m_radius > 20) // if no gesture is detected, draw a circle around the center of the hand
   {
     pen.setWidth(3);
     pen.setColor(QColor(255, 255, 255, 150));
@@ -281,7 +332,7 @@ void imageBox::paintEvent(QPaintEvent* event)
       }
     }
   }
-  else // if a gesture is detected, display the gesture label
+  else if(m_radius > 20) // if a gesture is detected, display the gesture label
   {
     p.rotate(m_gestureAngle - 180);
     p.setFont(QFont("DejaVu Sans", fontSize));

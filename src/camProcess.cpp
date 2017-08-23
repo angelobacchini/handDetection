@@ -61,7 +61,7 @@ cvProcessFrame::cvProcessFrame(QObject* parent) :
   m_peaks.fill(0, 5);
 
   // init kalman filter
-  initTracker(10.f);
+  initTracker(0.5f);
 
   for(int i=0; i<parametersTable.size(); i++)
     m_parameters.insert(parametersTable.at(i).m_id, parametersTable.at(i).m_default);
@@ -116,7 +116,6 @@ void cvProcessFrame::processFrame(const cv::Mat& _frame)
   m_temp0_64F.convertTo(m_deltaH_8U, CV_8U); //delta^2 in Cb image
   cv::pow(m_temp2_64F, 2, m_temp1_64F);
   m_temp1_64F.convertTo(m_deltaS_8U, CV_8U); //delta^2 in Cr image
-
   m_temp2_64F = m_temp0_64F + m_temp1_64F;
   m_temp0_64F = -(m_temp2_64F * m_sigma); //gaussian curve 1/2
   cv::exp(m_temp0_64F, m_temp1_64F); //gaussian curve 2/2
@@ -124,7 +123,7 @@ void cvProcessFrame::processFrame(const cv::Mat& _frame)
   m_temp2_64F.convertTo(m_temp0_8U, CV_8U);
 
   // median filtering
-  cv::medianBlur(m_temp0_8U, m_delta_8U, m_median);
+  cv::medianBlur(m_temp0_8U, m_delta_8U, (m_median/2)*2+1);
 
   // extract hand shape
   m_delta_8U.copyTo(m_temp0_8U);
@@ -247,7 +246,7 @@ void cvProcessFrame::processFrame(const cv::Mat& _frame)
 
 void cvProcessFrame::getSamplePosition(const int &_x, const int &_y)
 {
-  // show on the console the H S V value of the pixel clicked
+  // show on the console the H S V value of the clicked pixel
   float a = (float)(m_channelSplit[0].at<uchar>(_y, _x));
   float b = (float)(m_channelSplit[1].at<uchar>(_y, _x));
   float c = (float)(m_channelSplit[2].at<uchar>(_y, _x));

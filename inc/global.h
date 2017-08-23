@@ -14,8 +14,9 @@
 #define SLIDER_LABEL_STYLE  "color: rgb(90, 160, 100); font: 10pt ""DejaVu Sans"";"
 #define FPS_LABEL_STYLE "color: rgb(80, 120, 180); font: 24pt ""DejaVu Sans""; border-style: none; background: transparent;"
 #define FINGERS_INFO_STYLE "QTableView {color: rgb(90, 100, 130); font: 8pt ""DejaVu Sans Mono""; border-style: none; background: transparent;} \
-                            QHeaderView::section {color: rgb(80, 120, 180); font: 10pt ""DejaVu Sans Mono""; border-style: none; background: transparent;} \
+                            QHeaderView::section {color: rgb(80, 120, 180); font: 8pt ""DejaVu Sans Mono""; border-style: none; background: transparent;} \
                             QTableCornerButton::section {border-style: none; background: transparent;}"
+#define GESTURE_INFO_STYLE "color: rgb(90, 100, 130); font: 8pt ""DejaVu Sans Mono"";"
 
 struct processParameter
 {
@@ -34,4 +35,4 @@ struct processParameter
 
 extern QVector<processParameter> parametersTable;
 
-#endif // GLOBAL_H
+#endif

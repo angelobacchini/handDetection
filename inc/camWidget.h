@@ -35,7 +35,7 @@ private slots:
   void countFps();
   void getParameters();
   void showSliderValue(const int& _value);
-  void gestureDetect(QString _gesture, const QLineSeries& _vector);
+  void gestureDetect(const QVector<int>& _fingers);
 
 signals:
   void ready();
@@ -58,6 +58,7 @@ private:
 
   QTableWidget* m_fingersInfo;
   QVector<int>* m_fingers;
+  QLabel* m_gestureInfo;
 
   QImage m_image;
   QByteArray m_imageArray;
