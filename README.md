@@ -3,8 +3,10 @@ Hand/gesture detection with OpenCV and Qt.
 
 ![alt text](./handProfile.png)
 
-See full description at [angelobacchini.github.io](https://angelobacchini.github.io/software%20projects/hand-gesture-detection-with-qt-and-opencv)
+### See full description at [angelobacchini.github.io](https://angelobacchini.github.io/software%20projects/hand-gesture-detection-with-qt-and-opencv)
+
 ---
+
 ### build
 Builds with Qt 5.9.1 and OpenCV 3.3.0-2
 Make sure openCV path in handDetection.pro is correct, then build with 
@@ -12,11 +14,12 @@ Make sure openCV path in handDetection.pro is correct, then build with
         qmake handProject.pro
         make
 
-or just open the project in QtCreator.
+or just open handDetection.pro in QtCreator.
 
-## runtime slider settings
-| Sliders        | Are           |
-| ------------- |-------------|
+---
+### runtime slider settings
+| Sliders | Are |
+| :--- | :--- |
 | **mirror** | set to 1 to flip the image horizzontally |
 | **channel** | output channel (HSV) selector |
 | **output** | output modes selector - see list below |
@@ -36,5 +39,7 @@ or just open the project in QtCreator.
 4. Distance transform
 5. Distance transform (fingers region only)
 6. Split screen
+
+---
 
 Enjoy
