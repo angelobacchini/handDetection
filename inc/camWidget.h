@@ -23,6 +23,8 @@ friend class imageBox;
 public:
   explicit camWidget(QWidget* parent = 0);
   ~camWidget();
+  camWidget(camWidget const&) = delete;
+  camWidget& operator=(camWidget const&) = delete;
 
 public slots:
   void getImage(QByteArray _image);
@@ -74,6 +76,8 @@ class imageBox : public QWidget
 public:
   imageBox(QWidget* parent = 0);
   ~imageBox();
+  imageBox(imageBox const&) = delete;
+  imageBox& operator=(imageBox const&) = delete;
   QSize sizeHint() const;
 
 protected:

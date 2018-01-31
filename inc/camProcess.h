@@ -16,6 +16,8 @@ class cvCamCapture : public QObject
 public:
   explicit cvCamCapture(QObject *parent = 0);
   ~cvCamCapture();
+  cvCamCapture(cvCamCapture const&) = delete;
+  cvCamCapture& operator=(cvCamCapture const&) = delete;
 
 public slots:
   void getFrame();
@@ -34,6 +36,8 @@ class cvProcessFrame: public QObject
 public:
   explicit cvProcessFrame(QObject *parent = 0);
   ~cvProcessFrame();
+  cvProcessFrame(cvProcessFrame const&) = delete;
+  cvProcessFrame& operator=(cvProcessFrame const&) = delete;
 
 public slots:
   void processFrame(const cv::Mat& _frame);
