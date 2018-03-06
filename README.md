@@ -3,7 +3,7 @@ Hand/gesture detection with OpenCV and Qt.
 
 ![alt text](./handProfile.png)
 
-## See full description at [angelobacchini.github.io](https://angelobacchini.github.io/software%20projects/hand-gesture-detection-with-qt-and-opencv)
+## See full description at [angelobacchini.github.io](https://angelobacchini.github.io/2017/09/09/handDetection.html)
 
 ---
 
