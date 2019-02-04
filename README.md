@@ -11,7 +11,7 @@ If a reference skin tone is set on the plane, each pixel in the input frame can 
 
 ![distance from reference skin tone + gaussian kernel](pics/gaussian.png)
 
-Segmentation is concluded with a median filtering and binary thresolding:
+A median filter and binary thresolding conlcude the segmentation step:
 
 ![binary threshold](pics/binary.png)
 
