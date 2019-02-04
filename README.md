@@ -1,7 +1,7 @@
 # handDetection
 Hand/gesture detection with OpenCV and Qt.
 
-[![IMAGE ALT TEXT HERE](pics/thumb.png)](https://www.youtube.com/watch?v=pJyfd6UgbvM)
+[![Video](pics/thumb.png)](https://www.youtube.com/watch?v=pJyfd6UgbvM)
 
 ## skin segmentation
 A RGB to HSV color-space conversion is applied to the input frame. **Hue** and **Saturation** only are relevant for the segmentation process as **Value** it's too dependent on lighting conditions.
