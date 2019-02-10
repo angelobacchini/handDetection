@@ -4,32 +4,33 @@ Hand/gesture detection with OpenCV and Qt.
 [![Video](pics/thumb.png)](https://www.youtube.com/watch?v=pJyfd6UgbvM)
 
 ## skin segmentation
-A RGB to HSV color-space conversion is applied to the input frame. **Hue** and **Saturation** only are relevant for the segmentation process as **Value** it's too dependent on lighting conditions.
+Image segmentation starts with a RGB to HSV color-space conversion on the input frame. **Hue** and **Saturation** channels are relevant for the segmentation process while **Value** is discarded as too dependent on lighting conditions.
+
 In a Hue/Saturation representation, each pixel has a position on a 2D plane:
 
 ![hue/saturation space](pics/hueSatSpace.png)
 
-If a reference skin tone is set on the plane, each pixel in the input frame can be represented by its euclidean distance from the reference point. A non-linear function (gaussian kernel) is applied to the computed distance for each pixel:
+If a reference skin tone is set on the plane, each pixel in the input frame can be characterized by its euclidean distance from the reference point. A non-linear function (gaussian kernel) is applied to the euclidean distance for each pixel:
 
 ![distance from reference skin tone + gaussian kernel](pics/gaussian.png)
 
-A median filter and binary thresolding conlcude the segmentation step:
+A median filter is used to reduce noise and binary thresholding is then used to obtain the segmented binary image:
 
 ![binary threshold](pics/binary.png)
 
 ## distance transform
 "A distance transform is a derived representation of a digital image which labels each pixel of the image with the distance to the nearest obstacle pixel ... A most common type of obstacle pixel is a boundary pixel in a binary image." (wiki)
 
-Applying the distance transform on the binary image results in a new image where **each skin pixel will be replaced by its distance from the nearest non-skin pixel** (meaning that higher values are assigned to the center of the hand).
+Distance transform is applied to the binary image, resulting in a new image where **each skin pixel is replaced by its distance from the nearest non-skin pixel** (meaning that higher values are assigned to the center of the hand).
 
 ![distance transform](pics/distanceTransform.png)
 
 ## fingers detection
-The pixel with the higher distance transform value is set as the center of the hand, and its value is used to determine the radius of the hand's palm inscribed circle (i.e. the largest circle contained in it). Fingers start at the boundary of this circle. Fingers region is bounded to another circle with the same center and 3x radius.
+The pixel with the higher distance transform value is set as the center of the hand, and its value (distance to the closest non-skin pixel) is used to determine the radius of the hand's palm inscribed circle (i.e. the largest circle contained in it). Fingers start at the boundary of this circle. Fingers region is bounded to another circle with the same center and 3x radius.
 
 ![fingers ROI](pics/fingers.png)
 
-The final step adds up the distance transform values for each direction looking from the hand's center (within the outer circle region). Sums for each direction (0 to 360 degrees) are stored in an histogram. Peaks in the histogram are detected as fingers (picture below, top left).
+The final step is to add-up the distance transform values for each direction looking from the hand's center (within the outer circle region). Sums from each direction (0 to 360 degrees) are stored in an histogram. Peaks in the histogram are detected as fingers (picture below, top left).
 
 ![hand profile histogram](pics/handProfile.png)
 
@@ -42,7 +43,6 @@ Main QT thread takes care of the graphics and UI, while the computer vision work
 1. the image processing thread takes care of capturing webcam frames and do the CV processing
 2. when computation on a frame is completed, a signal is emitted to the GUI thread carrying a reference to the output from the processing performed. Next frame processing is started
 3. the GUI thread takes care of updating the graphic output and handling the user interaction (buttons, sliders, etc..)
-
 
 # build
 Builds with Qt 5.9.1 and OpenCV 3.3.0-2
