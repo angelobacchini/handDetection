@@ -4,7 +4,7 @@ Hand/gesture detection with OpenCV and Qt.
 [![Video](pics/thumb.png)](https://www.youtube.com/watch?v=pJyfd6UgbvM)
 
 ## skin segmentation
-Image segmentation starts with a RGB to HSV color-space conversion on the input frame. **Hue** and **Saturation** channels are relevant for the segmentation process while **Value** is discarded as too dependent on lighting conditions.
+Image segmentation starts with RGB to HSV color-space conversion of the input frame. **Hue** and **Saturation** channels are relevant for the segmentation process while **Value** is discarded as too dependent on lighting conditions.
 
 In a Hue/Saturation representation, each pixel has a position on a 2D plane:
 
